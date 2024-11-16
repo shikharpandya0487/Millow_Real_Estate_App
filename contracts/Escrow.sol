@@ -32,6 +32,22 @@ contract Escrow
     // uint256 is unsigned integer mapped with T/F 
 
 
+
+    modifier onlyBuyer(uint256 _nftId){
+        require(msg.sender == buyer[_nftId], "Only buyer can modift this");
+        _;
+    } //P
+    modifier onlySeller(){
+        require(msg.sender == seller, "Only seller can call this method");
+        _;
+    }  //P
+ modifier onlyInspector(){
+        require(msg.sender == inspector, "Only inspector can call this method");
+        _;
+    }  //P
+
+
+
     mapping(uint256 => bool) public isListed;
     mapping(uint256 => uint256) public purchasePrice;
     mapping(uint256 => uint256) public escrowAmount;
@@ -80,5 +96,34 @@ contract Escrow
         purchasePrice[_nftId]=_purchasePrice;
         escrowAmount[_nftId]=_escrowAmount;
         buyer[_nftId]=_buyer;
+
+
+       
+        }
+        //put under contract (only buyer- payable escrow)   //P
+         function depositEarnest(uint256 _nftId) public payable onlyBuyer(_nftId){
+            require(msg.value >= escrowAmount[_nftId]);
+
+    }
+
+
+    function updateInspectionStatus(uint256 _nftId, bool _passed)
+    public
+    onlyInspector
+    {
+        inspectionPassed[_nftId] = _passed
+    }
+
+
+
+
+
+
+    
+
+    receive() external payable{}  //P
+
+    funtion getBalance() public view returns (uint256){  //P
+        return address(this).balance;
     }
 }
